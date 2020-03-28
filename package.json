@@ -8,10 +8,10 @@
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
-        "serve:pwa": "http-server -p 8080 -c-1 dist/plan-simple",
+        "serve:pwa": "http-server -p 8080 -c-1 dist/covid-public-health",
         "format:test": "prettier projects/**/*.{ts,html,md,scss,json} --list-different",
         "format:write": "prettier projects/**/*.{ts,html,md,scss,json} --write",
-        "analyze": "ng build --prod --stats-json && webpack-bundle-analyzer ./dist/plan-simple/stats-es2015.json"
+        "analyze": "ng build --prod --stats-json && webpack-bundle-analyzer ./dist/covid-public-health/stats-es2015.json"
     },
     "husky": {
         "hooks": {
