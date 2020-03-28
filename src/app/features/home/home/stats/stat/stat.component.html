@@ -1,0 +1,43 @@
+<div class="row main mx-0 pb-3" [style.border-bottom-color]="color">
+    <!-- title -->
+    <div class="col-12 px-0">
+        <h3>
+            {{ title }}
+        </h3>
+    </div>
+    <!-- title end -->
+
+    <!-- main content -->
+    <div class="col-12 px-0">
+        <div class="row h-100 align-content-center">
+            <!-- badge -->
+            <div class="col-6">
+                <div class="row align-content-center h-100">
+                    <div class="col-12">
+                        <div
+                            class="app-badge small text-white text-center w-75"
+                            [style.background]="color"
+                        >
+                            + {{ percentChange }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of badge -->
+
+            <!-- stats -->
+            <div class="col-6">
+                <div class="row h-100">
+                    <div class="col-12 text-right">
+                        {{ incidentsTotal }}
+                    </div>
+                    <div class="col-12 small text-right">
+                        {{ incidentsToday }} today
+                    </div>
+                </div>
+            </div>
+            <!-- end of stats -->
+        </div>
+    </div>
+    <!-- end of main -->
+</div>
