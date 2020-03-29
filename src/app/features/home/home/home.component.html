@@ -2,6 +2,35 @@
     <div class="row">
         <div class="col-12">
             <app-stats></app-stats>
+            <div>
+                <a routerLink="/">All Statistics</a>
+            </div>
+
+            <button (click)="showAllStats()">
+                {{ displayAllStats ? 'Hide' : 'Show' }}
+            </button>
+            <ng-container *ngIf="allStats | async as stats">
+                <ng-container *ngIf="displayAllStats">
+                    <p *ngFor="let stat of stats | keyvalue">
+                        {{ stat | json }}
+                    </p>
+                </ng-container>
+            </ng-container>
+
+            <div>
+                <a routerLink="/canada">Canada Statistics</a>
+            </div>
+
+            <div>
+                <a routerLink="/usa">USA Statistics</a>
+            </div>
+
+            <ng-container *ngIf="countryStatistic | async as statistic">
+                <!-- <p>Country: {{ statistic | keyvalue }}</p> -->
+                <p *ngFor="let stat of statistic | keyvalue">
+                    {{ stat | json }}
+                </p>
+            </ng-container>
         </div>
     </div>
 </div>
