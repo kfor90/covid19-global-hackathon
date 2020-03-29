@@ -3,33 +3,33 @@
         <app-stat
             title="Infections"
             color="#1e90ff"
-            incidentsToday="9999"
-            incidentsTotal="9999999"
+            [incidentsToday]="infectionsToday"
+            [incidentsTotal]="infectionsTotal"
         >
         </app-stat>
     </div>
     <div class="col-12 col-sm-3 box">
         <app-stat
-            title="Recoveries"
-            color="#228b22"
-            incidentsToday="9999"
-            incidentsTotal="9999999"
+            title="Deaths"
+            color="#ee2c2c"
+            [incidentsToday]="deathsToday"
+            [incidentsTotal]="deathTotal"
         ></app-stat>
     </div>
     <div class="col-12 col-sm-3 box">
         <app-stat
-            title="Deaths"
-            color="#ee2c2c"
-            incidentsToday="9999"
-            incidentsTotal="9999999"
+            title="Recoveries"
+            color="#228b22"
+            [incidentsToday]="null"
+            [incidentsTotal]="recoveriesTotal"
         ></app-stat>
     </div>
     <div class="col-12 col-sm-3 box">
         <app-stat
             title="Critical"
             color="#eeb422"
-            incidentsToday="9999"
-            incidentsTotal="9999999"
+            [incidentsToday]="null"
+            [incidentsTotal]="criticalTotal"
         ></app-stat>
     </div>
 </div>
