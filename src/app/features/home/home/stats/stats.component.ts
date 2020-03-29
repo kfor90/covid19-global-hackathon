@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StatsService } from '../../../../core/stats.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-stats',
@@ -16,9 +18,40 @@ export class StatsComponent implements OnInit {
     criticalTotal: number;
 
     deathsToday: number;
-    deathsTotal: number;
+    deathTotal: number;
 
-    constructor() {}
+    private subscription: Subscription;
 
+    constructor(private statService: StatsService) {
+        this.infectionsToday = 0;
+        this.infectionsTotal = 0;
+        this.recoveriesToday = 0;
+        this.recoveriesTotal = 0;
+        this.deathTotal = 0;
+        this.deathsToday = 0;
+        this.criticalToday = 0;
+        this.criticalTotal = 0;
+        this.subscription = new Subscription();
+        this.getData();
+    }
     ngOnInit(): void {}
+
+    getData(): any {
+        this.subscription.add(
+            this.statService.getAllCountryData().subscribe({
+                next: (countries) => this.calculateStats(countries)
+            })
+        );
+    }
+
+    calculateStats(countryDataSet: any[]): void {
+        for (const dataSet of countryDataSet) {
+            this.infectionsToday += dataSet.todayCases;
+            this.infectionsTotal += dataSet.cases;
+            this.recoveriesTotal += dataSet.recovered;
+            this.deathTotal += dataSet.deaths;
+            this.deathsToday += dataSet.todayDeaths;
+            this.criticalTotal += dataSet.critical;
+        }
+    }
 }
