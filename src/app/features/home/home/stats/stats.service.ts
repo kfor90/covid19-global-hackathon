@@ -4,10 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { Statistic } from './stats.state';
 import { Observable } from 'rxjs';
 
-const BASE = 'https://corona.lmao.ninja/v2';
+const BASE = 'https://corona.lmao.ninja/';
 
 const Endpoints = {
-    All: `${BASE}/historical`
+    All: `${BASE}/v2/historical`,
+    Countries: `${BASE}/countries`
 };
 
 @Injectable({
@@ -18,5 +19,9 @@ export class StatsService {
 
     findAll(): Observable<Statistic[]> {
         return this.http.get<Statistic[]>(Endpoints.All);
+    }
+
+    getAllCountryData(): Observable<any> {
+        return this.http.get(Endpoints.Countries);
     }
 }

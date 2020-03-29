@@ -1,6 +1,5 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -24,7 +23,6 @@ import { reducers } from './core.state';
         // angular
         BrowserModule,
         BrowserAnimationsModule,
-        CommonModule,
         HttpClientModule,
         RouterModule,
         ServiceWorkerModule.register('ngsw-worker.js', {

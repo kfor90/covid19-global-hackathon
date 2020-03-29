@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { StatsService } from '../../../../core/stats.service';
+
 import { Subscription } from 'rxjs';
+import { StatsService } from './stats.service';
 
 @Component({
     selector: 'app-stats',
