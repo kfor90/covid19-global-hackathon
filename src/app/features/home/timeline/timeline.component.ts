@@ -6,8 +6,9 @@ import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 
 // local
-import { DateInfection } from './date-infections.inteface';
+import { DateInfection } from './interfaces/date-infections.inteface';
 import { TimelineService } from './timeline.service';
+import { DateDeath } from './interfaces/date-deaths.interface';
 
 am4core.useTheme(am4themes_animated);
 
@@ -20,18 +21,26 @@ export class TimelineComponent implements OnInit, OnDestroy {
     public chart: am4charts.XYChart;
     private fetchedData: any;
 
-    public dateInfections: { [key: string]: number };
-    public chartData: DateInfection[];
+    public infectionsByDate: { [key: string]: number };
+    public deathsByDate: { [key: string]: number };
+
+    public infectionsChartData: DateInfection[];
+    public deathsChartData: DateDeath[];
 
     constructor(private zone: NgZone, private service: TimelineService) {
-        this.dateInfections = {};
-        this.chartData = [];
+        this.infectionsByDate = {};
+        this.deathsByDate = {};
+
+        this.infectionsChartData = [];
+        this.deathsChartData = [];
     }
 
     ngOnInit(): void {
         Promise.all([this.getAndPopulateData()]).then(() => {
             this.setInfectionsByDate();
-            this.setChartData();
+            this.setInfectionChartData();
+            this.setDeathsByDate();
+            this.setDeathChartData();
             this.createGraph();
         });
     }
@@ -41,18 +50,29 @@ export class TimelineComponent implements OnInit, OnDestroy {
             let chart = am4core.create('chartdiv', am4charts.XYChart);
 
             // axis
-            let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-            categoryAxis.dataFields.category = 'date';
-            categoryAxis.title.text = 'Date';
+            let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+            dateAxis.dateFormatter = new am4core.DateFormatter();
+            dateAxis.dateFormatter.dateFormat = 'MM-dd-yyyy';
 
             let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-            valueAxis.title.text = 'Infections';
 
-            // set data
-            let series = chart.series.push(new am4charts.LineSeries());
-            series.dataFields.valueY = 'infections';
-            series.dataFields.categoryX = 'date';
-            chart.data = this.chartData;
+            // infection data
+            let infectionSeries = chart.series.push(new am4charts.LineSeries());
+            infectionSeries.dataFields.valueY = 'infections';
+            infectionSeries.dataFields.dateX = 'date';
+            infectionSeries.legendSettings.labelText = 'Total Infections';
+
+            infectionSeries.data = this.infectionsChartData;
+
+            // death data
+            let deathSeries = chart.series.push(new am4charts.LineSeries());
+            deathSeries.dataFields.valueY = 'deaths';
+            deathSeries.dataFields.dateX = 'date';
+            deathSeries.data = this.deathsChartData;
+            deathSeries.legendSettings.labelText = 'Total Deaths';
+            // deathSeries.le
+
+            chart.legend = new am4charts.Legend();
 
             this.chart = chart;
         });
@@ -66,8 +86,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
     }
 
-    private async;
-
     private async getAndPopulateData(): Promise<any> {
         this.fetchedData = await this.service.getHistoricalData().toPromise();
     }
@@ -75,16 +93,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private setInfectionsByDate(): void {
         for (const country of this.fetchedData) {
             for (const cases of Object.entries(country.timeline.cases)) {
-                this.dateInfections[cases[0]] =
-                    this.dateInfections[cases[0]] + Number(cases[1]) ||
+                this.infectionsByDate[cases[0]] =
+                    this.infectionsByDate[cases[0]] + Number(cases[1]) ||
                     Number(cases[1]);
             }
         }
     }
 
-    private setChartData(): any {
+    private setInfectionChartData(): any {
         const data = [];
-        for (const entry of Object.entries(this.dateInfections)) {
+        for (const entry of Object.entries(this.infectionsByDate)) {
             const dayData = {
                 date: entry[0],
                 infections: entry[1]
@@ -92,6 +110,28 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             data.push(dayData);
         }
-        this.chartData = data;
+        this.infectionsChartData = data;
+    }
+    private setDeathsByDate(): void {
+        for (const country of this.fetchedData) {
+            for (const cases of Object.entries(country.timeline.deaths)) {
+                this.deathsByDate[cases[0]] =
+                    this.deathsByDate[cases[0]] + Number(cases[1]) ||
+                    Number(cases[1]);
+            }
+        }
+    }
+
+    private setDeathChartData(): any {
+        const data = [];
+        for (const entry of Object.entries(this.deathsByDate)) {
+            const dayData = {
+                date: entry[0],
+                deaths: entry[1]
+            };
+
+            data.push(dayData);
+        }
+        this.deathsChartData = data;
     }
 }
