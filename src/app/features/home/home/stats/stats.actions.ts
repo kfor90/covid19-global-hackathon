@@ -11,6 +11,10 @@ export const homePageSetSelectedCountryId = createAction(
     props<{ country: string }>()
 );
 
+export const homePageSetSelectedCountryIdError = createAction(
+    '[Home Page] Set selected country id error'
+);
+
 export const homePageFetchStatsError = createAction(
     '[Home Page] Fetch stats error'
 );
