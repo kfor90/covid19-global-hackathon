@@ -20,6 +20,7 @@ import * as statsActions from './stats.actions';
 import { StatsService } from './stats.service';
 import { Statistic } from './stats.state';
 import { State } from 'src/app/features/features.state';
+import { RouterStateUrl } from 'src/app/core/router/router.state';
 
 @Injectable({
     providedIn: 'root'
@@ -45,25 +46,16 @@ export class StatsEffects {
         )
     );
 
-    countryPage$ = createEffect(() =>
+    navigateRoute$ = createEffect(() =>
         this.actions$.pipe(
             ofType(routerNavigatedAction),
             concatMap((event: RouterNavigatedAction<any>) =>
                 this.store.pipe(select(selectRouteParam, { name: 'country' }))
             ),
-            tap((country) =>
-                country
-                    ? undefined
-                    : this.store.dispatch(
-                          statsActions.homePageSetSelectedCountryId({
-                              country: null
-                          })
-                      )
-            ),
-            filter((country) => country && country.length),
             map((country: string) =>
                 statsActions.homePageSetSelectedCountryId({ country })
-            )
+            ),
+            catchError(() => of(statsActions.homePageSetSelectedCountryIdError))
         )
     );
 }
