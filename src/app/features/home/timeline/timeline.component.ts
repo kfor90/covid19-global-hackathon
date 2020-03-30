@@ -1,5 +1,8 @@
 import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 
+// ngrx
+import { Store, select } from '@ngrx/store';
+
 // amchart
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
@@ -7,8 +10,10 @@ import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 
 // local
 import { DateInfection } from './interfaces/date-infections.inteface';
-import { TimelineService } from './timeline.service';
 import { DateDeath } from './interfaces/date-deaths.interface';
+import { selectAllStatistics } from '../home/stats/stats.selectors';
+import { StatisticsCollection } from '../home/stats/stats.state';
+import { combineLatest } from 'rxjs';
 
 am4core.useTheme(am4themes_animated);
 
@@ -27,7 +32,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     public infectionsChartData: DateInfection[];
     public deathsChartData: DateDeath[];
 
-    constructor(private zone: NgZone, private service: TimelineService) {
+    public stats: StatisticsCollection;
+
+    constructor(private zone: NgZone, private store: Store) {
         this.infectionsByDate = {};
         this.deathsByDate = {};
 
@@ -36,16 +43,31 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        Promise.all([this.getAndPopulateData()]).then(() => {
-            this.setInfectionsByDate();
-            this.setInfectionChartData();
-            this.setDeathsByDate();
-            this.setDeathChartData();
-            this.createGraph();
+        combineLatest([this.getData()]).subscribe(([statistics]) => {
+            if (statistics && Object.keys(statistics).length > 0) {
+                this.stats = statistics as StatisticsCollection;
+                this.setInfectionsByDate();
+                this.setInfectionChartData();
+                this.setDeathsByDate();
+                this.setDeathChartData();
+                this.createGraph();
+            }
         });
     }
 
-    createGraph(): void {
+    ngOnDestroy(): void {
+        this.zone.runOutsideAngular(() => {
+            if (this.chart) {
+                this.chart.dispose();
+            }
+        });
+    }
+
+    private getData(): any {
+        return this.store.pipe(select(selectAllStatistics));
+    }
+
+    private createGraph(): void {
         this.zone.runOutsideAngular(() => {
             let chart = am4core.create('chartdiv', am4charts.XYChart);
 
@@ -70,7 +92,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
             deathSeries.dataFields.dateX = 'date';
             deathSeries.data = this.deathsChartData;
             deathSeries.legendSettings.labelText = 'Total Deaths';
-            // deathSeries.le
 
             chart.legend = new am4charts.Legend();
 
@@ -78,20 +99,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this.zone.runOutsideAngular(() => {
-            if (this.chart) {
-                this.chart.dispose();
-            }
-        });
-    }
-
-    private async getAndPopulateData(): Promise<any> {
-        this.fetchedData = await this.service.getHistoricalData().toPromise();
-    }
-
     private setInfectionsByDate(): void {
-        for (const country of this.fetchedData) {
+        for (const country of Object.values(this.stats)) {
             for (const cases of Object.entries(country.timeline.cases)) {
                 this.infectionsByDate[cases[0]] =
                     this.infectionsByDate[cases[0]] + Number(cases[1]) ||
@@ -113,7 +122,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.infectionsChartData = data;
     }
     private setDeathsByDate(): void {
-        for (const country of this.fetchedData) {
+        for (const country of Object.values(this.stats)) {
             for (const cases of Object.entries(country.timeline.deaths)) {
                 this.deathsByDate[cases[0]] =
                     this.deathsByDate[cases[0]] + Number(cases[1]) ||

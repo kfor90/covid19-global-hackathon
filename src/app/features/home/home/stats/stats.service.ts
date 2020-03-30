@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Statistic } from './stats.state';
 import { Observable } from 'rxjs';
 
-const BASE = 'https://corona.lmao.ninja/';
+const BASE = 'https://corona.lmao.ninja';
 
 const Endpoints = {
     All: `${BASE}/v2/historical`,
