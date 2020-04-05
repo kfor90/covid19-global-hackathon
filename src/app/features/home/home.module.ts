@@ -9,9 +9,15 @@ import { StatComponent } from './home/stats/stat/stat.component';
 import { FEATURE_NAME, reducers } from '../features.state';
 import { StatsEffects } from './home/stats/stats-effects.service';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { TimelineComponent } from './timeline/timeline.component';
 
 @NgModule({
-    declarations: [HomeComponent, StatsComponent, StatComponent],
+    declarations: [
+        HomeComponent,
+        StatsComponent,
+        StatComponent,
+        TimelineComponent
+    ],
     imports: [
         SharedModule,
         HomeRoutingModule,
